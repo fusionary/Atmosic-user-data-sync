@@ -24,3 +24,34 @@ function create_user_data_table() {
   require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
   dbDelta($create_table_query);
 }
+
+// Register a POST endpoint to save JSON user data to the user data table
+add_action('rest_api_init', function () {
+  register_rest_route('atmosic', 'update', [
+		'methods'  => 'POST',
+		'callback' => 'atmosic_save_user_data',
+    'permission_callback' => '__return_true',
+    'accept_json' => true,
+	]);
+});
+
+function atmosic_save_user_data($data) {
+  global $wpdb;
+
+  $user_id = $data['user_id'];
+  $country = $data['country'];
+  $job_title = $data['job_title'];
+  $company = $data['company'];
+
+  $wpdb->query(
+    $wpdb->prepare("INSERT INTO {$wpdb->prefix}app_user_data (userID, country, job_title, company) VALUES (%d, %s, %s, %s)
+      ON DUPLICATE KEY UPDATE userID = %d, country = %s, job_title = %s, company = %s",
+      $user_id, $country, $job_title, $company, $user_id, $country, $job_title, $company)
+  );
+
+  $res = new WP_REST_Response();
+  $res->set_status($wpdb->last_error ? 500 : 200);
+  $res->set_data($wpdb->last_error);
+
+  return $res;
+}
