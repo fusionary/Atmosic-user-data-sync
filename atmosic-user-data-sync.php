@@ -55,3 +55,32 @@ function atmosic_save_user_data($data) {
 
   return $res;
 }
+
+// Register a GET endpoint to retrieve user data for the mobile app
+add_action('rest_api_init', function () {
+  register_rest_route('atmosic', 'user', [
+		'methods'  => 'GET',
+		'callback' => 'atmosic_get_user_data',
+    'args' => [
+			'user_id' => [
+				'required' => true,
+				'validate_callback' => function ($param) {return is_numeric($param);}
+			]
+    ],
+    'permission_callback' => '__return_true',
+	]);
+});
+
+function atmosic_get_user_data($data) {
+  global $wpdb;
+
+  $user_id = $data['user_id'];
+
+  $user_data = $wpdb->get_row("SELECT * FROM wp_users JOIN {$wpdb->prefix}app_user_data ON {$wpdb->prefix}app_user_data.userID = wp_users.id WHERE wp_users.id = $user_id;", OBJECT);
+
+  $res = new WP_REST_Response();
+  $res->set_status($wpdb->last_error ? 500 : 200);
+  $res->set_data($wpdb->last_error ? $wpdb->last_error : $user_data);
+
+  return $res;
+}
