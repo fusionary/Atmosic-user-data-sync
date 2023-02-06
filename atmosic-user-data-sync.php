@@ -19,7 +19,7 @@ function create_user_data_table() {
       `job_title` text NOT NULL,
       `company` text NOT NULL,
       `country` text NOT NULL
-    ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+    ) DEFAULT CHARSET=utf8;
   ";
   require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
   dbDelta($create_table_query);
