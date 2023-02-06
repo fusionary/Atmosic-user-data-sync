@@ -75,8 +75,10 @@ function atmosic_get_user_data($data) {
   global $wpdb;
 
   $user_id = $data['user_id'];
-
-  $user_data = $wpdb->get_row("SELECT * FROM wp_users JOIN {$wpdb->prefix}app_user_data ON {$wpdb->prefix}app_user_data.userID = wp_users.id WHERE wp_users.id = $user_id;", OBJECT);
+  $users_table = "{$wpdb->prefix}users";
+  $app_user_data_table = "{$wpdb->prefix}app_user_data";
+  
+  $user_data = $wpdb->get_row("SELECT $app_user_data_table.*, $users_table.user_nicename, $users_table.user_email, $users_table.display_name FROM $users_table JOIN $app_user_data_table ON $app_user_data_table.userID = $users_table.id WHERE $users_table.id = $user_id;", OBJECT);
 
   $res = new WP_REST_Response();
   $res->set_status($wpdb->last_error ? 500 : 200);
