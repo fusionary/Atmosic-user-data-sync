@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Atmosic User Data Sync
-Plugin URI:  https://github.com/fusionary/wp-translation-plugin
+Plugin URI:  https://github.com/fusionary/Atmosic-user-data-sync
 Description: Save Atmosic mobile app user data to WordPress database
 Version:     1.0.0
 Author:      Fusionary
